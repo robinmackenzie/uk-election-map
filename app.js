@@ -5,19 +5,19 @@ var config = {
 }
 
 window.addEventListener("DOMContentLoaded", main);
-Array.from(document.getElementsByClassName("result-button")).forEach(el => el.addEventListener("click", changeResult));
 
 async function main() {
   config["mapjson"] = await d3.json("./topo_wpc_uk_10pc.topo.json");
   config["data2015"] = await d3.json("./uk_ge_2015_v2.json");
   config["data2017"] = await d3.json("./uk_ge_2017_v2.json");
+  config["buttons"] = Array.from(document.getElementsByClassName("result-button"));
+  config["buttons"].forEach(el => el.addEventListener("click", changeResult));
   initMap();
 }
 
 function changeResult(e) {
-  var buttons = Array.from(document.getElementsByClassName("result-button"));
-  buttons.forEach(el => el.classList.remove("btn-primary"));
-  buttons.forEach(el => el.classList.add("btn-default"));
+  config["buttons"].forEach(el => el.classList.remove("btn-primary"));
+  config["buttons"].forEach(el => el.classList.add("btn-default"));
   e.target.classList.add("btn-primary");
   config["dataset"] = `data${e.target.dataset.resultsyear}`;
   colorMap();
