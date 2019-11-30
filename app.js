@@ -46,8 +46,6 @@ function colorMap() {
   }
 
   // add features to map
-  var foo = g.selectAll("path");
-
   g.selectAll("path")
     .style("fill", function(d) {
       return d.properties.color;
