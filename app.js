@@ -140,7 +140,6 @@ function initMap() {
   }
     
   function clicked(d) {
-    console.log(d);
     var newWindow;
     var link = d.properties.theyWorkForYouLink;
     if (link != "") {
