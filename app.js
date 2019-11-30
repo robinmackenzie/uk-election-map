@@ -96,7 +96,7 @@ function initMap() {
     .style("vector-effect", "non-scaling-stroke")
     .style("stroke", "#e6e6e6")
       .style("opacity", 1.0)
-    .on("click", clicked)
+    .on("dblclick", doubleClicked)
     .on("mouseover", highlight)
     .on("mouseout", unHighlight);
 
@@ -139,9 +139,10 @@ function initMap() {
     //info.attr("class", "infoPanel hide");    
   }
     
-  function clicked(d) {
+  function doubleClicked(d) {
     var newWindow;
     var link = d.properties.theyWorkForYouLink;
+    // validate the data point 
     if (link != "") {
       // open link in new window
       newWindow = window.open(link, "_blank");
