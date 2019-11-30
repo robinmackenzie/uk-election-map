@@ -23,16 +23,11 @@ function changeResult(e) {
   colorMap();
 }
 
-function colorMap() {
-  // get features
-  const g = d3.select("#map svg g");
-
+function updateMapProperties() {
   // uk map data features
   const uk = topojson.feature(config["mapjson"], config["mapjson"].objects.uk);
-     
   // current results
   const results = config[config["dataset"]];
-
   // append election data to topo data
   for (var i=0; i<results.length; i++) {
     for (var j=0; j<uk.features.length; j++) {
@@ -44,6 +39,15 @@ function colorMap() {
       }
     }
   }
+  return uk;
+}
+
+function colorMap() {
+  // get features
+  const g = d3.select("#map svg g");
+
+  // uk map data features
+  const uk = updateMapProperties();
 
   // add features to map
   g.selectAll("path")
@@ -77,22 +81,7 @@ function initMap() {
   const g = svg.append("g");
 
   // uk map data features
-  const uk = topojson.feature(config["mapjson"], config["mapjson"].objects.uk);
-     
-  // current results
-  const results = config[config["dataset"]];
-
-  // append election data to topo data
-  for (var i=0; i<results.length; i++) {
-    for (var j=0; j<uk.features.length; j++) {
-      if (results[i].Id == uk.features[j].properties.PCON13CD) {
-        uk.features[j].properties["color"] = results[i]["Summary"].PartyColour;
-        uk.features[j].properties["theyWorkForYouLink"] = results[i]["Summary"].TheyWorkForYouLink;
-        uk.features[j].properties["electionData"] = results[i];
-        break;
-      }
-    }
-  }
+  const uk = updateMapProperties();
 
   // add features to map
   g.selectAll("path")
