@@ -97,8 +97,7 @@ function initMap() {
     .style("stroke", "#e6e6e6")
       .style("opacity", 1.0)
     .on("dblclick", doubleClicked)
-    .on("mouseover", highlight)
-    .on("mouseout", unHighlight);
+    .on("click", highlight);
 
   svg.call(zoom); // delete this line to disable free zooming
     
@@ -115,7 +114,13 @@ function initMap() {
   }
 
   function highlight(d) {
-    // set opacity and stroke on area
+    // reset opacities
+    d3.select("#map svg g")
+      .selectAll("path")
+      .style("stroke", "#e6e6e6")
+      .style("opacity", 1);
+
+    // set opacity and stroke on selected area
     d3.select(this)
       .transition()
       .duration(200)
