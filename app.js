@@ -133,17 +133,6 @@ function initMap() {
     updateInfoPanelHtml(d.properties["electionData"]);
   }
     
-  function unHighlight(d) {
-    // reset opacity    
-    d3.select(this)
-      .transition()
-      .duration(200)
-      .style("stroke", "#e6e6e6")
-      .style("opacity", 1);
-
-    //info.attr("class", "infoPanel hide");    
-  }
-    
   function doubleClicked(d) {
     var newWindow;
     var link = d.properties.theyWorkForYouLink;
