@@ -1,23 +1,68 @@
 var config = {
   "width": 960,
   "height": 720,
+  "dataset": "data2017"
 }
 
 window.addEventListener("DOMContentLoaded", main);
+Array.from(document.getElementsByClassName("result-button")).forEach(el => el.addEventListener("click", changeResult));
 
 async function main() {
   config["mapjson"] = await d3.json("./topo_wpc_uk_10pc.topo.json");
   config["data2015"] = await d3.json("./uk_ge_2015_v2.json");
   config["data2017"] = await d3.json("./uk_ge_2017_v2.json");
-  renderMap();
+  initMap();
 }
 
-function renderMap() {
+function changeResult(e) {
+  var buttons = Array.from(document.getElementsByClassName("result-button"));
+  buttons.forEach(el => el.classList.remove("btn-primary"));
+  buttons.forEach(el => el.classList.add("btn-default"));
+  e.target.classList.add("btn-primary");
+  config["dataset"] = `data${e.target.dataset.resultsyear}`;
+  colorMap();
+}
+
+function colorMap() {
+  // get features
+  const g = d3.select("#map svg g");
+
+  // uk map data features
+  const uk = topojson.feature(config["mapjson"], config["mapjson"].objects.uk);
+     
+  // current results
+  const results = config[config["dataset"]];
+
+  // append election data to topo data
+  for (var i=0; i<results.length; i++) {
+    for (var j=0; j<uk.features.length; j++) {
+      if (results[i].Id == uk.features[j].properties.PCON13CD) {
+        uk.features[j].properties["color"] = results[i]["Summary"].PartyColour;
+        uk.features[j].properties["theyWorkForYouLink"] = results[i]["Summary"].TheyWorkForYouLink;
+        uk.features[j].properties["electionData"] = results[i];
+        break;
+      }
+    }
+  }
+
+  // add features to map
+  var foo = g.selectAll("path");
+
+  g.selectAll("path")
+    .style("fill", function(d) {
+      return d.properties.color;
+    });
+  
+}
+
+function initMap() {
+
+  // d3 init map
   const projection = d3.geoMercator()
     .scale(1200)
     .center([1.5491, 53.8008]) // Leeds :)
     .rotate([12,0])
-    .translate([config.width / 2, config.height / 2]);
+    .translate([config["width"] / 2, config["height"] / 2]);
 
   const zoom = d3.zoom()
     .scaleExtent([0.1, 100])
@@ -32,17 +77,20 @@ function renderMap() {
     .attr("height", config.height);
 
   const g = svg.append("g");
-      
-  // get uk map data features
-  var uk = topojson.feature(config["mapjson"], config["mapjson"].objects.uk);
+
+  // uk map data features
+  const uk = topojson.feature(config["mapjson"], config["mapjson"].objects.uk);
+     
+  // current results
+  const results = config[config["dataset"]];
 
   // append election data to topo data
-  for (var i=0; i<config["data2017"].length; i++) {
+  for (var i=0; i<results.length; i++) {
     for (var j=0; j<uk.features.length; j++) {
-      if (config["data2017"][i].Id == uk.features[j].properties.PCON13CD) {
-        uk.features[j].properties["color"] = config["data2017"][i]["Summary"].PartyColour;
-        uk.features[j].properties["theyWorkForYouLink"] = config["data2017"][i]["Summary"].TheyWorkForYouLink;
-        uk.features[j].properties["electionData"] = config["data2017"][i];
+      if (results[i].Id == uk.features[j].properties.PCON13CD) {
+        uk.features[j].properties["color"] = results[i]["Summary"].PartyColour;
+        uk.features[j].properties["theyWorkForYouLink"] = results[i]["Summary"].TheyWorkForYouLink;
+        uk.features[j].properties["electionData"] = results[i];
         break;
       }
     }
